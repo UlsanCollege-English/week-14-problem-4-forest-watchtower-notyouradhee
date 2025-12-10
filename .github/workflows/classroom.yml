@@ -1,7 +1,8 @@
 name: Autograding Tests
 'on':
-- push
-- repository_dispatch
+  push:
+    branches: [main]
+  workflow_dispatch:
 permissions:
   checks: write
   actions: read
@@ -13,12 +14,19 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+    - name: Install dependencies
+      run: pip install -r requirements.txt
     - name: tests
       id: tests
-      uses: classroom-resources/autograding-python-grader@v1
+      uses: classroom-resources/autograding-command-grader@v1
       with:
         timeout: 10
-        setup-command: ''
+        test-name: pytest
+        command: python -m pytest tests/test_hw04.py -v
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
